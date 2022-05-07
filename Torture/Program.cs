@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Device.WiFi;
+using System.Device.Wifi;
 using System.Diagnostics;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -20,10 +20,10 @@ namespace Torture
             try
             {
                 //var wifi =
-                //    WiFiNetworkHelper.ScanAndConnectDhcp(
+                //    WifiNetworkHelper.ScanAndConnectDhcp(
                 //        "LajFaj",
                 //        "---",
-                //        WiFiReconnectionKind.Automatic,
+                //        WifiReconnectionKind.Automatic,
                 //        true);
                 //Debug.WriteLine($"Wifi status: {wifi}.");
 
@@ -39,7 +39,7 @@ namespace Torture
                     nfcDataProvider.Start();
                     httpPublisher.Start();
                     mqttPublisher.Start();
-                    
+
                     while (true)
                     {
                         var message = nfcDataProvider.GetMessage();

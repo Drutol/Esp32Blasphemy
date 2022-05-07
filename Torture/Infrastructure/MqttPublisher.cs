@@ -41,6 +41,7 @@ namespace Torture.Infrastructure
             if(_isReconnecting)
                 return;
 
+            NfcController.MqttConnection = false;
             _connectionThread = new Thread(ConnectionLoop);
             _connectionThread.Start();
         }
@@ -63,6 +64,7 @@ namespace Torture.Infrastructure
                     }
                     else // success
                     {
+                        NfcController.MqttConnection = true;
                         break;
                     }
                 }
