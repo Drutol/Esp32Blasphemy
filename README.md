@@ -30,13 +30,13 @@ Some other random device is:
 
 ### Common
 
-As it appears you can share code between .Net6 and nanoFramework assembly relatively easily by facilitating the means of so called "Shared" projects, funnily enough I've never known about it before so some knowledge was gained here though I'm not sure if there's any other use for it when runtime supports the "normal" runtimes like .net6 with .netstandard2.0/2.1.
+As it appears you can share code between .Net6 and nanoFramework assembly relatively easily by facilitating the means of so called "Shared" projects, funnily enough I've never known about it before so some knowledge was gained here though I'm not sure if there's any other use for it when runtime supports the "normal" targets like .net6 with .netstandard2.0/2.1.
 
 ### Torture - the nanoFramework project
 
 #### Inception
 
-The meat of this project, and it literally was in my very first iteration of it. Making Http requests to [BaconIpsum.com](https://baconipsum.com) for the the tasty and meaty LoremIpsum variation which now lays partially commented on the bottom of Program.cs file. Quick test of Json deserialization and hooking up cert of TLS from resource files which are quite cool. As it later turned out the certificates can be uploaded from the DeviceExplorer tab in the Visual Studio via the nanoFramework Extension (as well as WiFi configuration). Which can be still done easily from code.
+The meat of this project, and it literally was in my very first iteration of it. Making Http requests to [BaconIpsum.com](https://baconipsum.com) for the the tasty and meaty LoremIpsum variation which now lays partially commented on the bottom of `Program.cs` file. Quick test of Json deserialization and hooking up cert of TLS from resource files which are quite cool. As it later turned out the certificates can be uploaded from the DeviceExplorer tab in the Visual Studio via the nanoFramework Extension (as well as WiFi configuration). Which can be still done easily from code.
 
 ```cs
 var wifi =
@@ -89,7 +89,7 @@ NativeMemory.GetMemoryInfo(
     out var freeSize,
     out var largestFreeBlock);
 ```
-the CPU stats... are not. In fact you have to build your very own custom `nanoCLR.bin` from the sources with some customizations. Given it's more of a debug data it makes sense for it not being included in the standard public image. I'm sometimes ambitious and sometimes curious, when stars align and I'm in both states I get work. Let's say it was interesting trip not having any prior experience with embedded programming nor any legitimate C++ codebases.
+the CPU stats... are not. In fact you have to build your very own custom `nanoCLR.bin` from the sources with some customizations. Given it's more of a debug data it makes sense for it not being included in the standard public image. I'm sometimes ambitious and sometimes curious, when stars align and I'm in both states I get to work. Let's say it was interesting trip not having any prior experience with embedded programming nor any legitimate C++ codebases.
 
 ##### First steps
 
@@ -100,7 +100,7 @@ private static extern ushort GetCpuUsageInternal(sbyte[] buffer);
 ```
 in your code.
 
-Initially I thought "Great now I'm just gonna fill it with C++, everything will automatically build, job done". Except it didn't obviously. As it appears the generated bunch of files is a CMake module which you throw inside the sources of your local cloned repo. Having my keyword _stub_ with a quick search engine query I land at this marvel: https://jsimoesblog.wordpress.com/2018/06/19/interop-in-net-nanoframework/ , fairly dated but still relevant.
+Initially I thought "Great now I'm just gonna fill it with C++, everything will automatically build, job done". Except it didn't obviously. As it appears the generated bunch of files is a CMake module which you throw inside the sources of your local cloned [repo](https://github.com/nanoframework/nf-interpreter). Having my keyword _stub_ with a quick search engine query I land at this marvel: https://jsimoesblog.wordpress.com/2018/06/19/interop-in-net-nanoframework/ , fairly dated but still relevant.
 
 ##### Building the image
 
@@ -110,9 +110,9 @@ Pull a docker container with everything inside, run it and you are golden. Launc
 
 Just don't replace it in its entirety like me... and just merge the json arrays with presets. The ones inside inherit the pasted ones and without there being base presets nothing appears to work and CMake error messages are not that helpful. From now on it was smooth sailing tooling wise.
 
-Now you copy the folder from `Stubs` that Visual Studio generated into handy `InteropAssemblies` forlder in the root of the nf-interpreter repo. (https://github.com/nanoframework/nf-interpreter). Except for the `*.cmake` file, this bugger goes to `CMake/Modules` and after that the build system will do its magic _automagically_ _sparkle sparkle_.
+Now you copy the folder from `Stubs` that Visual Studio generated into handy `InteropAssemblies` forlder in the root of the [nf-interpreter repo](https://github.com/nanoframework/nf-interpreter). Except for the `*.cmake` file, this bugger goes to `CMake/Modules` and after that the build system will do its magic _automagically_ _sparkle sparkle_.
 
-So now, I have project ready to get the implementation going, essentially it's best to just go to the part where it reads:
+So now, I have project ready to get the implementation going, essentially, it's best to just go to the part where it reads:
 ```cpp
     ////////////////////////////////
     // implementation starts here //
@@ -157,7 +157,7 @@ and it arrives into my C++ method like this:
 uint16_t CpuStatsProvider::GetCpuUsageInternal( CLR_RT_TypedArray_INT8 param0, HRESULT &hr )
 ```
 
-returned type will be the number of bytes (character in this case) written to the buffer. The `CLR_RT_TypedArray_INT8` type translates basically to `char*` to which I write the lines instead of using `printf` like original sample. 
+returned type will be the number of bytes (characters in this case) written to the buffer. The `CLR_RT_TypedArray_INT8` type translates basically to `char*` to which I write the lines instead of using `printf` like original sample. 
 
 ```cpp
 outputBufferIndex += snprintf(outputBuffer + outputBufferIndex, RETURN_BUFFER_SIZE - outputBufferIndex, "| Task | Run Time | Percentage\n");
@@ -202,3 +202,4 @@ This concludes my journey for now, I hope that someone may stumble upon this and
 
 Cpp files can be found in: `InteropSources` folder.
 Rest of the solution is usual `.sln` file.
+Built binary with CMake presets is in `Binaries` folder. The image was build from [d7cda02](https://github.com/nanoframework/nf-interpreter/commit/a7af0ae4e34048a26c360a05ec00a370f5d187de) commit on nf-interpreter repository.
